@@ -1,0 +1,74 @@
+<div class="container mt-4">
+  <!-- Provider Selection Form -->
+  <form [formGroup]="serviceForm" class="mb-4">
+    <div class="mb-3">
+      <label for="providerId" class="form-label fw-bold">Select Provider</label>
+      <select
+        id="providerId"
+        formControlName="providerId"
+        (change)="onProviderChange()"
+        class="form-select"
+      >
+        <option value="" disabled>Select a Provider</option>
+        <option *ngFor="let provider of providers" [value]="provider.id">
+          {{ provider.name }}
+        </option>
+      </select>
+    </div>
+  </form>
+
+  <!-- GridView with Data or Empty Message -->
+  <div *ngIf="serviceData.length > 0; else noData" class="table-responsive">
+    <!-- Add button to each row -->
+    <button class="btn btn-primary btn-sm" (click)="OnAddProvider()">
+      Add Provider
+    </button>
+
+    <table
+      class="table table-bordered table-hover mt-4 text-center align-middle"
+    >
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Service</th>
+          <th>Client</th>
+          <th>Operator</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of serviceData">
+          <td>{{ data.ID }}</td>
+          <td>{{ data.IDService }}</td>
+          <td>{{ data.IDClient }}</td>
+          <td>{{ data.IDOperator }}</td>
+          <td>{{ data.Status }}</td>
+          <!-- <td>{{ data.SK }}</td> -->
+          <td>
+            <button
+              class="btn btn-warning btn-sm me-2"
+              (click)="onUpdate(data.SK)"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+
+            <!-- <button class="btn btn-primary btn-sm me-2" (click)="onCopy(data)">
+                <i class="fas fa-copy"></i>
+              </button> -->
+            <button class="btn btn-danger btn-sm" (click)="onDelete(data.SK)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No Data Available Template -->
+  <ng-template #noData>
+    <div class="alert alert-info mt-4 text-center" role="alert">
+      No data available. Please select a provider to load the data.
+    </div>
+  </ng-template>
+</div>

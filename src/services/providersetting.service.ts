@@ -24,6 +24,26 @@ export class ProvidersettingService {
   submitData(data: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(this.apiUrl, JSON.stringify(data), { headers });
+
   }
+
+
+  getProviderData(providerId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${providerId}`);
+  }
+
+  getDataBySkId(skId: string): Observable<any> {
+    const url = `${this.apiUrl}?skId=${encodeURIComponent(skId)}`;
+    return this.http.get<any>(url);
+    
+  }
+
+  // updateData(data: any): Observable<any> {
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  //   return this.http.post(this.apiUrl, JSON.stringify(data), { headers });
+  // }
+  // updateData(skid: string, data: any): Observable<any> {
+  //   return this.http.put(`${this.apiUrl}/Provider/${skid}`, data);
+  // }
 
 }

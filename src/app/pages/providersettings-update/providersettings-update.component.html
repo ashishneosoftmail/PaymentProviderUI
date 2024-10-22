@@ -1,0 +1,277 @@
+<form [formGroup]="updateprovider" (ngSubmit)="onSubmit()" class="container mt-4 p-3 bg-light shadow-sm rounded">
+
+    <h5><b>Upadte Provider List</b></h5>
+    <!-- Provider Settings Section -->
+    <div class="border border-primary rounded mb-4 p-3">
+      <h6 class="text-primary mb-3">Provider Settings</h6>
+      <div class="row mb-3">
+        <div class="col-md-3">
+          <label>Provider</label>
+          <select formControlName="IDProvider" class="form-control">
+            <option value="" disabled>Select Provider</option>
+            <option *ngFor="let provider of providers" [value]="provider.key">{{ provider.name }}</option>
+          </select>
+          <div *ngIf="updateprovider.get('IDProvider')?.invalid && updateprovider.get('IDProvider')?.touched" class="text-danger small">
+            Provider is required.
+          </div>
+        </div>
+  
+        <div class="col-md-3">
+          <label>Clients</label>
+          <select formControlName="IDClient" class="form-control">
+            <option value="" disabled>Select Client</option>
+            <option *ngFor="let client of clients" [value]="client.key">{{ client.name }}</option>
+          </select>
+          <div *ngIf="updateprovider.get('IDClient')?.invalid && updateprovider.get('IDClient')?.touched" class="text-danger small">
+            IDClient is required.
+          </div>
+        </div>
+  
+        <div class="col-md-3">
+          <label>Service</label>
+          <select formControlName="IDService" class="form-control">
+            <option value="" disabled>Select Service</option>
+            <option *ngFor="let service of services" [value]="service.key">{{ service.name }}</option>
+          </select>
+          <div *ngIf="updateprovider.get('IDService')?.invalid && updateprovider.get('IDService')?.touched" class="text-danger small">
+            Service is required.
+          </div>
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-md-3">
+          <label>Country</label>
+          <select formControlName="IDClient" class="form-control">
+            <option value="" disabled>Select Country</option>
+            <option *ngFor="let country of Countries" [value]="country.key">{{ country.name }}</option>
+          </select>
+          <div *ngIf="updateprovider.get('IDClient')?.invalid && updateprovider.get('IDClient')?.touched" class="text-danger small">
+            Country is required.
+          </div>
+        </div>
+  
+        <div class="col-md-3">
+          <label>Operator</label>
+          <select formControlName="IDOperator" class="form-control">
+            <option value="" disabled>Select Operator</option>
+            <option *ngFor="let operator of Operators" [value]="operator.key">{{ operator.name }}</option>
+          </select>
+        </div>
+  
+        <div class="col-md-3">
+          <label>Status</label>
+          <select formControlName="Status" class="form-control">
+            <option value="" disabled selected>Select Status</option>
+            <option *ngFor="let status of Status" [value]="status.key">{{ status.name }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Request Settings Section -->
+    <div class="border border-success rounded mb-4 p-3">
+      <h6 class="text-success mb-3">Request Settings</h6>
+      <div class="row mb-3">
+        <div class="col-md-3">
+          <label>Basic URL</label>
+          <input type="text" formControlName="BasicURL" placeholder="Basic URL" class="form-control" />
+          <div *ngIf="updateprovider.get('BasicURL')?.invalid && updateprovider.get('BasicURL')?.touched" class="text-danger small">
+            Basic URL is required.
+          </div>
+        </div>
+  
+        <div class="col-md-3">
+          <label>Request Type</label>
+          <select formControlName="DataType" class="form-control">
+            <option value="" disabled>Select Request Type</option>
+            <option *ngFor="let RequestType of RequestTypes" [value]="RequestType">{{ RequestType }}</option>
+          </select>
+           <div *ngIf="updateprovider.get('DataType')?.invalid && updateprovider.get('DataType')?.touched" class="text-danger small">
+            request type is required.
+          </div>
+        </div>
+  
+        <div class="col-md-3">
+          <label>Action</label>
+          <select formControlName="Action" class="form-control">
+            <option value="" disabled>Select Action</option>
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+          <div *ngIf="updateprovider.get('Action')?.invalid && updateprovider.get('Action')?.touched" class="text-danger small">
+            Action is required.
+          </div>
+        </div>
+      </div>
+  
+      <!-- Header Section -->
+      <h6 class="text-success mt-3">Header</h6>
+      <div formArrayName="headers">
+        <div *ngFor="let header of headers.controls; let i = index" [formGroupName]="i" class="row mb-3">
+          <div class="col-md-3">
+            <label>Key</label>
+            <input formControlName="Key" placeholder="Key" class="form-control" />
+            <div *ngIf="updateprovider.get('key')?.invalid && updateprovider.get('key')?.touched" class="text-danger small">
+              </div>
+            
+          </div>
+          <div class="col-md-2">
+            <label>Value Type</label>
+            <select formControlName="valueType" class="form-control">
+              <option value="static">Static</option>
+              <option value="dynamic">Dynamic</option>
+            </select>
+          </div>
+          <div class="col-md-3" *ngIf="showHideValueControl(i, 'static')">
+            <label>Static Value</label>
+            <input type="text" formControlName="staticValue" placeholder="Static Value" class="form-control" />
+          </div>
+          <div class="col-md-3" *ngIf="showHideValueControl(i, 'dynamic')">
+            <label>Dynamic Value</label>
+            <select formControlName="dynamicValue" class="form-control">
+              <option value="Select Dynamic Value" selected disabled>Select Dynamic Value</option>
+              <option value="$MSISDN">$MSISDN</option>
+              <option value="$PLMN">$PLMN</option>
+              <option value="$OS">$OS</option>
+              <option value="$Language">$Language</option>
+              <option value="$UniqueID">$UniqueID</option>
+              <option value="$UserIP">$UserIP</option>
+              <option value="$Country">$Country</option>
+            </select>
+          </div>
+          <div class="col-md-1 d-flex align-items-center justify-content-between">
+            <button type="button" class="btn btn-danger me-2" (click)="removeHeader(i)" *ngIf="headers.length > 1">-</button>
+            <button type="button" class="btn btn-success" (click)="addHeader('', '')">+</button>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Attribute Param Section -->
+  <h6 class="text-success mb-3">Parameters</h6>
+  
+  <div formArrayName="attributes">
+  
+    <div *ngFor="let attribute of attributes.controls; let i = index" [formGroupName]="i" class="row mb-3">
+      <div class="col-md-2">
+        <label>Name</label>
+        <input formControlName="paramKey" placeholder="Parameter Name" class="form-control" />
+        <div *ngIf="attribute.get('paramKey')?.hasError('required') && attribute.get('paramKey')?.touched">
+          <small class="text-danger">Parameter Key is required</small>
+        </div>
+      </div>
+  
+  <div class="col-md-2">
+    <label>Data Type</label>
+    <select formControlName="datatype" class="form-control" (change)="onDataTypeChange(i)">
+      <option value="" selected disabled>Select Data Type</option>
+      <option value="Number">Number</option>
+      <option value="String">String</option>
+      <option value="Bool">Bool</option>
+    </select>
+  </div> 
+  
+  
+      <!-- For non-Bool types: Show Value Type and Dynamic/Static Fields -->
+      <div *ngIf="!isBoolType(i)" class="col-md-2">
+        <label>Value Type</label>
+        <select formControlName="AttributevalueType" class="form-control">
+          <option value="" disabled >Select Value Type</option>
+          <option value="attributestatic">Static</option>
+          <option value="attributedynamic">Dynamic</option>
+        </select>
+      </div>
+  
+      <div *ngIf="showHideAttributeValueControl(i, 'attributestatic')" class="col-md-3">
+        <label>Static Value</label>
+      
+        <div  *ngIf="attribute.get('datatype')?.value === 'Number'">
+          <input 
+            type="number" 
+            formControlName="" 
+            class="form-control large-input" 
+            (keypress)="onlyAllowNumber($event)" 
+            placeholder="Enter only numbers" />
+        </div>
+      
+        <div  *ngIf="attribute.get('datatype')?.value === 'String'">
+          <input 
+            type="text" 
+            formControlName="attributestaticValue" 
+            class="form-control large-input" 
+            (keypress)="onlyAllowText($event)" 
+            placeholder="Enter only text" />
+        </div>
+      </div>
+      
+      
+  
+      <div *ngIf="showHideAttributeValueControl(i, 'attributedynamic')" class="col-md-3">
+        <label>Dynamic Value</label>
+        <select formControlName="dynamicstaticValue" class="form-control">
+          <option value="Select Dynamic Value">Select Dynamic Value</option>
+          <option value="$MSISDN">$MSISDN</option>
+          <option value="$PLMN">$PLMN</option>
+          <option value="$OS">$OS</option>
+          <option value="$Language">$Language</option>
+          <option value="$UniqueID">$UniqueID</option>
+          <option value="$UserIP">$UserIP</option>
+          <option value="$Country">$Country</option>
+        </select>
+      </div>
+  
+      <!-- For Bool: Replace with Radio Buttons -->
+    <div *ngIf="isBoolType(i)" class="col-md-4">
+        <label class="form-label d-block">Value</label>
+        <div class="d-flex align-items-center">
+          <div class="form-check me-3">
+            <input 
+              type="radio" 
+              formControlName="boolstaticValue" 
+              class="form-check-input" 
+              [value]="true" 
+              id="boolTrue-{{ i }}">
+            <label for="boolTrue-{{ i }}" class="form-check-label ms-1">True</label>
+          </div>
+          <div class="form-check">
+            <input 
+              type="radio" 
+              formControlName="boolstaticValue" 
+              class="form-check-input" 
+              [value]="false" 
+              id="boolFalse-{{ i }}">
+            <label for="boolFalse-{{ i }}" class="form-check-label ms-1">False</label>
+          </div>
+        </div>
+      </div>
+      
+  
+      <div class="col-md-1 d-flex align-items-center justify-content-between">
+        <button type="button" class="btn btn-danger me-2" (click)="removeAttribute(i)" *ngIf="attributes.length > 1">-</button>
+        <button type="button" class="btn btn-success" (click)="addAttribute('','','')">+</button>
+      </div>
+  
+    </div> 
+  
+   </div> 
+  
+  </div>
+  
+    <!-- Response Settings Section -->
+    <div class="border border-warning rounded mb-4 p-3">
+      <h6 class="text-warning mb-3">Response Settings</h6>
+      <div class="row">
+        <div class="col-md-3">
+          <label>Response Type</label>
+          <select formControlName="DataType" class="form-control">
+            <option value="" disabled>Select Response Type</option>
+            <option *ngFor="let ResponseType of ResponseTypes" [value]="ResponseType">{{ ResponseType }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary mt-3">Update</button>
+  </form>
+  

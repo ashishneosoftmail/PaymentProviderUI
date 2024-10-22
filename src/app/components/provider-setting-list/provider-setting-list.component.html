@@ -1,0 +1,97 @@
+<div class="container mt-4">
+  <!-- Provider Selection Form -->
+  <div class="mb-3 form-group">
+    <label for="providerId" class="form-label fw-bold">Select Provider</label>
+    <select
+      id="providerId"
+      [(ngModel)]="selectedProvider"
+      (change)="loadProviderSettings()"
+      class="form-select"
+    >
+      <option value="">Select a Provider</option>
+      <option *ngFor="let provider of providers" [value]="provider.key">
+        {{ provider.name }}
+      </option>
+    </select>
+  </div>
+  <!-- Add button to each row -->
+  <button class="btn btn-primary btn-sm" (click)="navigateToCreate()">
+    Add Provider
+  </button>
+  <!-- GridView with Data or Empty Message -->
+  <div
+    *ngIf="providerSettings.length > 0; else noData"
+    class="table-responsive"
+  >
+    <table
+      class="table table-bordered table-hover mt-4 text-center align-middle"
+    >
+      <thead class="table-light">
+        <tr>
+          <th>SR NO</th>
+          <th>Service</th>
+          <th>Client</th>
+          <th>Operator</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of providerSettings; let i = index">
+          <td>{{ i + 1 }}</td>
+          <!-- Auto-increment row number -->
+          <td>{{ data.IDService }}</td>
+          <td>{{ data.IDClient }}</td>
+          <td>{{ data.IDProvider }}</td>
+          <td>{{ data.Status }}</td>
+          <!-- <td>{{ data.SK }}</td> -->
+          <td>
+            <button
+              class="btn btn-warning btn-sm me-2"
+              (click)="navigateToUpdate(data.SK)"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+
+            <button
+              class="btn btn-primary btn-sm me-2"
+              (click)="copyToCreateForm(data)"
+            >
+              <i class="fas fa-copy"></i>
+            </button>
+
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="deleteProviderSetting(data.SK)"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No Data Available Template -->
+  <ng-template #noData>
+    <div class="" role="alert">
+      <table
+        class="table table-bordered table-hover mt-4 text-center align-middle"
+      >
+        <thead class="table-light">
+          <tr>
+            <th>SR NO</th>
+            <th>Service</th>
+            <th>Client</th>
+            <th>Operator</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+      </table>
+      <h5 class="text-center">
+        <b> No data available. Please select a provider to load the data.</b>
+      </h5>
+    </div>
+  </ng-template>
+</div>

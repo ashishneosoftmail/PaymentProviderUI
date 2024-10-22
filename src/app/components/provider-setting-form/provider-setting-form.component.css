@@ -1,0 +1,111 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #343a40;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+input,
+select {
+  margin-top: 5px;
+}
+
+.row {
+  margin-bottom: 15px;
+}
+
+.row > [class*='col-'] {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+/* Button group within Headers */
+button {
+  margin-top: 5px;
+}
+
+/* Styling the Add/Remove Header buttons */
+button.btn-danger,
+button.btn-success {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Aligning header controls on the same line */
+[formArrayName='Headers'] .row,
+[formArrayName='Parameters'] .row {
+  align-items: center;
+}
+
+/* Add space between input elements and buttons */
+.col-md-1 button {
+  margin-right: 5px;
+}
+
+/* Styling the request and response sections */
+.form-group h2 {
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  color: #495057;
+}
+
+/* Form section background */
+div[formGroupName='RequestSettings'],
+div[formGroupName='ResponseSettings'] {
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+/* Submit and Cancel buttons */
+.button-group button {
+  width: 120px;
+  margin: 0 10px;
+}
+/* Base title style */
+.section-title {
+  font-size: 24px; /* Size of the title */
+  font-weight: 600; /* Bold font */
+  color: #343a40; /* Dark text color */
+  margin-bottom: 10px; /* Space below the title */
+  padding-bottom: 5px; /* Space below text */
+  border-bottom: 3px solid #007bff; /* Blue underline */
+  text-align: left; /* Align to the left */
+  position: relative; /* For pseudo-element positioning */
+}
+
+/* Optional: Add a subtle shadow */
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px; /* Thickness of the shadow line */
+  background-color: rgba(0, 123, 255, 0.2); /* Light blue shadow */
+  z-index: -1; /* Ensure it’s behind the title */
+}

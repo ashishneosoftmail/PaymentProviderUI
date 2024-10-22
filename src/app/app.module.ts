@@ -7,22 +7,28 @@ import { ProvidersettingComponent } from './pages/providersetting/providersettin
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
-
-
-
+import { ProvidersettingsListComponent } from './pages/providersettings-list/providersettings-list.component';
+import { ProvidersettingsUpdateComponent } from './pages/providersettings-update/providersettings-update.component';
+import { ProviderSettingListComponent } from './components/provider-setting-list/provider-setting-list.component';
+import { ProviderSettingFormComponent } from './components/provider-setting-form/provider-setting-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ProvidersettingComponent  ],
+    ProvidersettingComponent,
+    ProvidersettingsListComponent,
+    ProvidersettingsUpdateComponent,
+    ProviderSettingListComponent,
+    ProviderSettingFormComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule  // Ensure this is imported
+    FormsModule,
+    HttpClientModule, // Ensure this is imported
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

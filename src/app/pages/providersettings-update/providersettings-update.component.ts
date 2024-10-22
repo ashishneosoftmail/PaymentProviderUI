@@ -7,6 +7,7 @@ import {
   FormArrayName,
 } from '@angular/forms';
 import { ProvidersettingService } from '../../../services/providersetting.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 // Define interfaces for attributes and headers
 interface Attribute {
@@ -26,13 +27,16 @@ interface Header {
 }
 
 @Component({
-  selector: 'app-providersetting',
-  templateUrl: './providersetting.component.html',
-  styleUrl: './providersetting.component.css',
+  selector: 'app-providersettings-update',
+  templateUrl: './providersettings-update.component.html',
+  styleUrl: './providersettings-update.component.css',
 })
-export class ProvidersettingComponent implements OnInit {
-  connectionForm: FormGroup;
-  inputType: string = 'integer'; // Default selected input type
+export class ProvidersettingsUpdateComponent {
+  updateprovider: FormGroup;
+  skId: string = '';
+
+  // connectionForm: FormGroup;
+  // inputType: string = 'integer'; // Default selected input type
 
   providers = [
     { key: 1, name: 'Actel' },
@@ -99,43 +103,56 @@ export class ProvidersettingComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private providerService: ProvidersettingService
+    private providerService: ProvidersettingService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
-    this.connectionForm = this.fb.group({
-      id: 0,
-      provider: [1, Validators.required],
-      client: [1, Validators.required],
-      service: [1, Validators.required],
-      country: [1, Validators.required],
-      operator: [7, Validators.required],
-      RequestType: ['JSON', Validators.required],
-      ResponseType: ['JSON', Validators.required],
-      action: ['GET', Validators.required],
-      Status: [1, Validators.required],
+    this.updateprovider = this.fb.group({
+      PK: [''],
+      SK: [''],
+      ID: [''],
+      IDProvider: [''],
+      //DataType:[],
+      // client: [''],
+      IDService: [''], // Ensure these controls match what you use in the HTML
+      IDClient: [''],
+      IDCountry: [''],
+      country: [''],
+      IDOperator: [''],
+      RequestType: [''],
+      ResponseType: [''],
+      Action: [''],
+      Status: [''],
       Attributedynamicvalue: [],
       BasicURL: ['', Validators.required], // First textbox
-      dataType: ['Number'],
       headers: this.fb.array([]),
       attributes: this.fb.array([]),
       inputValue: [''], // Dynamic input field value
-      InsertStatus: ['1', Validators.required],
+      DataType: [''],
 
       //attributes: this.fb.array([this.createAttribute()]),
     });
   }
-
   ngOnInit(): void {
-    this.addHeader(); // Add one initial header row
-    this.addAttribute(); // Add one initial attribute parameter row
-
+    //this.addHeader();       // Add one initial header row
+    //this.addAttribute();    // Add one initial attribute parameter row
     // Clear the textbox whenever the dropdown changes
-    this.connectionForm.get('attributeValue')?.setValue('');
+    this.updateprovider.get('attributeValue')?.setValue('');
+
+    this.route.queryParamMap.subscribe((params) => {
+      const encodedSkId = params.get('skId');
+      if (encodedSkId) {
+        this.skId = decodeURIComponent(encodedSkId); // Decode the skId
+        this.fetchDataBySkId(this.skId);
+      } else {
+        console.error('skId parameter is missing.');
+      }
+    });
   }
 
   // Dynamically update validators and input type based on selected datatype
   onDataTypeChange(index: number): void {
     const attribute = this.attributes.at(index);
-    debugger;
     if (attribute.get('datatype')?.value === 'Bool') {
       // Reset non-Bool specific controls
       attribute.get('AttributevalueType')?.reset();
@@ -147,43 +164,76 @@ export class ProvidersettingComponent implements OnInit {
     }
 
     // Store selected data type to use in template
-    attribute.get('selectedType')?.setValue(attribute.get('datatype')?.value);
+    //attribute.get('selectedType')?.setValue(attribute.get('datatype')?.value);
   }
 
-  // Function to generate GUID
-  generateGUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
-      /[xy]/g,
-      function (c) {
-        const r = (Math.random() * 16) | 0,
-          v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      }
-    );
-  }
+  getDynamicValues = () => {
+    return [
+      { value: '$MSISDN', name: '$MSISDN' },
+      { value: '$PLMN', name: '$PLMN' },
+      { value: '$OS', name: '$OS' },
+      { value: '$Language', name: '$Language' },
+      { value: '$UniqueID', name: '$UniqueID' },
+      { value: '$UserIP', name: '$UserIP' },
+      { value: '$Country', name: '$Country' },
+    ];
+  };
+
+  getAttributeDynamicValues = () => {
+    return [
+      { value: '$MSISDN', name: '$MSISDN' },
+      { value: '$PLMN', name: '$PLMN' },
+      { value: '$OS', name: '$OS' },
+      { value: '$Language', name: '$Language' },
+      { value: '$UniqueID', name: '$UniqueID' },
+      { value: '$UserIP', name: '$UserIP' },
+      { value: '$Country', name: '$Country' },
+    ];
+  };
 
   // Create a new FormGroup for a header
-  createHeader(): FormGroup {
+  createHeader(key: string, value: string): FormGroup {
+    const dynamicValues = this.getDynamicValues();
+    let isDynamic = false;
+    dynamicValues.forEach((v) => {
+      if (v.value === value) {
+        isDynamic = true;
+      }
+    });
+    const valueType = isDynamic ? 'dynamic' : 'static';
     return this.fb.group({
-      headerKey: [''],
+      headerKey: [key],
       headerType: [''],
       headerValue: [''],
-      valueType: ['static'],
-      staticValue: [''],
-      dynamicValue: ['Select Dynamic Value'],
+      valueType: [valueType],
+      staticValue: [!isDynamic ? value : ''],
+      dynamicValue: [isDynamic ? value : 'Select Dynamic Value'],
+      Key: [key],
     });
   }
 
   // Create a new attribute form group
-  createAttribute(): FormGroup {
+  // "Name": "Parameter1",
+  //       "Type": "Number",
+  //       "Value": "7677"
+  createAttribute(Name: string, Type: string, value: string): FormGroup {
+    const dynamicValues = this.getAttributeDynamicValues();
+    let isattributeDynamic = false;
+    dynamicValues.forEach((v) => {
+      if (v.value === value) {
+        isattributeDynamic = true;
+      }
+    });
+    const valueType = isattributeDynamic
+      ? 'attributedynamic'
+      : 'attributestatic';
     return this.fb.group({
-      paramKey: ['', Validators.required],
-      datatype: ['Number', Validators.required], // Add datatype with required validation
-      paramValue: [''],
-      AttributevalueType: ['attributestatic', Validators.required],
-      attributedynamic: ['option2'],
-      dynamicstaticValue: ['Select Dynamic Value'], // Set the default value here, e.g., 'option2'
-      attributestaticValue: [''],
+      paramKey: [Name],
+      datatype: [Type], // Add datatype with required validation
+      AttributevalueType: [valueType],
+      attributedynamic: [''],
+      dynamicstaticValue: [isattributeDynamic ? value : 'Select Dynamic Value'], // Set the default value here, e.g., 'option2'
+      attributestaticValue: [!isattributeDynamic ? value : ''],
       inputValue: [''], // Input field or radio value
       boolstaticValue: [],
     });
@@ -191,24 +241,18 @@ export class ProvidersettingComponent implements OnInit {
 
   // Get attributes as a FormArray
   get attributes(): FormArray {
-    return this.connectionForm.get('attributes') as FormArray;
+    return this.updateprovider.get('attributes') as FormArray;
   }
 
   // Add new attribute
 
-  addAttribute() {
-    const attributeForm = this.fb.group({
-      datatype: ['Number'],
-      AttributevalueType: ['attributestatic'],
-      attributestaticValue: [''],
-      dynamicstaticValue: ['Select Dynamic Value'],
-      boolValue: [null],
-      selectedType: ['Number'], // To store the selected data type
-      paramKey: [''],
-      boolstaticValue: [],
-    });
-    // Add new attribute
-    this.attributes.push(attributeForm); // Ensure attributes is not null
+  addAttribute(Name: string, Type: string, Value: string) {
+    this.attributes.push(this.createAttribute(Name, Type, Value)); // Ensure attributes is not null
+  }
+
+  // Method to add a new header
+  addHeader(key: string, value: string) {
+    this.headers.push(this.createHeader(key, value));
   }
 
   onlyAllowNumber(event: KeyboardEvent): void {
@@ -237,6 +281,12 @@ export class ProvidersettingComponent implements OnInit {
     }
   }
 
+  removeHeader(index: number) {
+    if (this.headers.length > 1) {
+      this.headers.removeAt(index);
+    }
+  }
+
   // Check if Bool is selected
   isBoolType(index: number): boolean {
     return this.attributes.at(index).get('datatype')?.value === 'Bool';
@@ -251,49 +301,35 @@ export class ProvidersettingComponent implements OnInit {
     return this.attributes.at(index).get('datatype')?.value === 'Bool';
   }
 
-  // Method to add a new header
-  addHeader(): void {
-    this.headers.push(this.createHeader());
-  }
-
-  // Method to remove a header
-  // removeHeader(index: number): void {
-  //  this.headers.removeAt(index);
-  //}
-  removeHeader(index: number) {
-    if (this.headers.length > 1) {
-      this.headers.removeAt(index);
-    }
-  }
-
   // Getters for easier access to form arrays
   get headers(): FormArray {
-    return this.connectionForm.get('headers') as FormArray;
+    return this.updateprovider.get('headers') as FormArray;
   }
 
   onSubmit() {
-    if (this.connectionForm.valid) {
-      const formData = this.connectionForm.value;
+    if (this.updateprovider.valid) {
+      const formData = this.updateprovider.value;
 
       // Get the current date and time for RegDate and UpdateDate
       const currentDateTime = new Date().toISOString();
-      debugger;
-
       // Create JSON structure from form data
       const jsonData = {
+        PK: formData.PK,
+        SK: formData.SK,
         Status: formData.Status, // Boolean to "1" or "0"
-        ID: null, // Null for new record
-        IDService: formData.service,
-        IDClient: formData.client,
-        IDCountry: formData.country,
-        IDOperator: formData.operator,
-        IDProvider: formData.provider, // Assuming this comes from your form
-        RegDate: null, // To be set later in API/backend if needed
+        ID: formData.ID, // Null for new record
+        IDService: parseInt(formData.IDService),
+        IDClient: parseInt(formData.IDClient),
+        IDCountry: parseInt(formData.IDCountry),
+        IDOperator: parseInt(formData.IDOperator),
+        IDProvider: parseInt(formData.IDProvider), // Assuming this comes from your form
+
+        RegDate: formData.RegDate, // To be set later in API/backend if needed
         UpdateDate: null, // Same for UpdateDate
         RequestSettings: {
           BasicURL: formData.BasicURL,
           DataType: formData.RequestType,
-          Action: formData.action,
+          Action: formData.Action,
 
           // Loop over attributes to assign values properly, including dropdowns
           Parameters: formData.attributes.map((attribute: any) => {
@@ -311,7 +347,7 @@ export class ProvidersettingComponent implements OnInit {
             return {
               Name: attribute.paramKey,
               Type: attribute.datatype,
-              Value: value,
+              Value: attribute.valueType,
             };
           }),
 
@@ -334,7 +370,7 @@ export class ProvidersettingComponent implements OnInit {
       // Call the service to submit the data
       this.providerService.submitData(jsonData).subscribe(
         (response) => {
-          console.log('Data submitted successfully:', response);
+          console.log('Data Updated successfully:', response);
           // Optionally refresh the form or page here
         },
         (error) => {
@@ -342,26 +378,26 @@ export class ProvidersettingComponent implements OnInit {
         }
       );
     } else {
-      console.log('Form is invalid:', this.connectionForm.errors);
+      console.log('Form is invalid:', this.updateprovider.errors);
     }
   }
 
   // Helper function to find invalid controls
   findInvalidControls() {
-    const invalidControls = Object.keys(this.connectionForm.controls).filter(
-      (key) => this.connectionForm.get(key)?.invalid
+    const invalidControls = Object.keys(this.updateprovider.controls).filter(
+      (key) => this.updateprovider.get(key)?.invalid
     );
 
     console.log('Invalid Controls:', invalidControls);
 
     invalidControls.forEach((control) => {
-      const controlErrors = this.connectionForm.get(control)?.errors;
+      const controlErrors = this.updateprovider.get(control)?.errors;
       console.log(`Errors in ${control}:`, controlErrors);
     });
   }
 
   private getHeaders(): FormArray {
-    return this.connectionForm.get('headers') as FormArray;
+    return this.updateprovider.get('headers') as FormArray;
   }
 
   showHideValueControl(index: number, type: string): boolean {
@@ -370,7 +406,7 @@ export class ProvidersettingComponent implements OnInit {
   }
 
   private getAttributes(): FormArray {
-    return this.connectionForm.get('attributes') as FormArray;
+    return this.updateprovider.get('attributes') as FormArray;
   }
 
   showHideAttributeValueControl(index: number, type: string): boolean {
@@ -378,5 +414,58 @@ export class ProvidersettingComponent implements OnInit {
       ?.at(index)
       .get('AttributevalueType');
     return valueTypeControl?.value ? valueTypeControl.value === type : false;
+  }
+
+  fetchDataBySkId(skId: string): void {
+    console.log('Fetching data with skId:', skId); // Debugging log
+    this.providerService.getDataBySkId(encodeURIComponent(skId)).subscribe(
+      (data) => {
+        // Set form values with fetched data  IDProvider
+        this.updateprovider.get('IDClient')?.setValue(data[0].IDClient);
+        this.updateprovider.get('IDProvider')?.setValue(data[0].IDProvider);
+        this.updateprovider.get('IDService')?.setValue(data[0].IDService);
+        this.updateprovider.get('IDCountry')?.setValue(data[0].IDCountry);
+        this.updateprovider.get('IDOperator')?.setValue(data[0].IDOperator);
+        this.updateprovider.get('Status')?.setValue(data[0].Status);
+        this.updateprovider.get('ID')?.setValue(data[0].ID);
+        this.updateprovider.get('PK')?.setValue(data[0].PK);
+        this.updateprovider.get('SK')?.setValue(data[0].SK);
+        this.updateprovider.get('RegDate')?.setValue(data[0].RegDate);
+        //IDService
+        //DataType
+        // Binding each property individually
+        this.updateprovider
+          .get('BasicURL')
+          ?.setValue(data[0].RequestSettings.BasicURL);
+
+        this.updateprovider
+          .get('DataType')
+          ?.setValue(data[0].RequestSettings.DataType);
+        this.updateprovider
+          .get('Action')
+          ?.setValue(data[0].RequestSettings.Action);
+        this.updateprovider
+          .get('ResponseType')
+          ?.setValue(data[0].ResponseSettings.ResponseType);
+        //InsertStatus
+
+        for (const header of data[0].RequestSettings.Headers) {
+          this.addHeader(header.Key, header.Value);
+        }
+
+        for (const attribute of data[0].RequestSettings.Parameters) {
+          this.addAttribute(attribute.Name, attribute.Type, attribute.Value);
+        }
+
+        this.updateprovider.get('IDClient')?.setValue(data[0].IDClient);
+        // Example for a textbox
+
+        console.log('Form updated with data:', this.updateprovider.value);
+        console.log('Form updated with data:', data); // Log updated form values
+      },
+      (error) => {
+        console.error('Error fetching data:', error);
+      }
+    );
   }
 }
