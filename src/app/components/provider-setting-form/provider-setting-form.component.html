@@ -1,5 +1,5 @@
 <div class="container">
-  <h2>
+  <h2 class="section-title">
     {{ isEditMode ? 'Update Provider Setting' : 'Create Provider Setting' }}
   </h2>
 
@@ -84,7 +84,7 @@
     </div>
 
     <div class="form-group mt-2">
-      <h2>Request Settings</h2>
+      <h2 class="section-title">Request Settings</h2>
       <div formGroupName="RequestSettings">
         <div class="row">
           <div class="col-md-4">
@@ -180,7 +180,7 @@
         </div>
 
         <!-- Parameters -->
-        <div class="mt-2">
+        <!-- <div class="mt-2">
           <label>Parameters</label>
           <div class="" formArrayName="Parameters">
             <div
@@ -195,6 +195,7 @@
                   class="form-control"
                 />
               </div>
+
               <div class="col-md-2">
                 <select formControlName="Type" class="form-select">
                   <option
@@ -205,6 +206,7 @@
                   </option>
                 </select>
               </div>
+
               <div class="col-md-2">
                 <select formControlName="ValueType" class="form-select">
                   <option value="static">Static</option>
@@ -254,12 +256,144 @@
               </div>
             </div>
           </div>
+        </div> -->
+
+        <!-- Parameters -->
+        <div class="mt-2">
+          <label>Parameters</label>
+          <div formArrayName="Parameters">
+            <div
+              class="row"
+              *ngFor="let parameter of parameters.controls; let i = index"
+              [formGroupName]="i"
+            >
+              <!-- Name Input -->
+              <div class="col-md-4">
+                <input
+                  formControlName="Name"
+                  placeholder="Name"
+                  class="form-control"
+                />
+              </div>
+
+              <!-- Type Dropdown -->
+              <div class="col-md-2">
+                <select
+                  formControlName="Type"
+                  class="form-select"
+                  (change)="onTypeChange(i)"
+                >
+                  <option
+                    *ngFor="let type of parameterDataTypes"
+                    [value]="type"
+                  >
+                    {{ type }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- ValueType Dropdown -->
+              <div class="col-md-2">
+                <select formControlName="ValueType" class="form-select">
+                  <option value="static">Static</option>
+                  <option value="dynamic">Dynamic</option>
+                </select>
+              </div>
+
+              <!-- Value Input / Radio Buttons -->
+              <div class="col-md-2">
+                <ng-container
+                  *ngIf="
+                    parameter.get('ValueType')?.value === 'static';
+                    else dynamicParameterValue
+                  "
+                >
+                  <ng-container [ngSwitch]="parameter.get('Type')?.value">
+                    <!-- Radio Buttons for Boolean Type -->
+                    <div *ngSwitchCase="'Bool'">
+                      <div class="form-check">
+                        <input
+                          type="radio"
+                          value="true"
+                          class="form-check-input"
+                          formControlName="Value"
+                        />
+                        <label class="form-check-label">True</label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          type="radio"
+                          value="false"
+                          class="form-check-input"
+                          formControlName="Value"
+                        />
+                        <label class="form-check-label">False</label>
+                      </div>
+                    </div>
+
+                    <!-- Numeric Input for Number Type -->
+                    <input
+                      *ngSwitchCase="'number'"
+                      type="text"
+                      formControlName="Value"
+                      placeholder="Enter a number"
+                      class="form-control"
+                      (keypress)="allowOnlyNumbers($event)"
+                    />
+
+                    <!-- String Input for Other Types -->
+                    <input
+                      *ngSwitchDefault
+                      type="text"
+                      formControlName="Value"
+                      placeholder="Enter a String"
+                      class="form-control"
+                      (keypress)="allowOnlyStrings($event)"
+                    />
+                  </ng-container>
+                </ng-container>
+
+                <!-- Dynamic Parameter Value Dropdown -->
+                <ng-template #dynamicParameterValue>
+                  <select formControlName="Value" class="form-select">
+                    <option value="">Select Dynamic Value</option>
+                    <option
+                      *ngFor="let dynamicValue of dynamicValues"
+                      [value]="dynamicValue"
+                    >
+                      {{ dynamicValue }}
+                    </option>
+                  </select>
+                </ng-template>
+              </div>
+
+              <!-- Add / Remove Buttons -->
+              <div class="col-md-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary mt-2"
+                  (click)="removeParameter(i)"
+                  *ngIf="parameters.length > 1"
+                >
+                  -
+                </button>
+                &nbsp;
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary mt-2"
+                  (click)="addNewParameter('', 'number', 'static', '')"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="form-group mt-2">
-      <h2>Response Settings</h2>
+      <h2 class="section-title">Response Settings</h2>
       <div formGroupName="ResponseSettings">
         <div class="row">
           <div class="col-md-4">

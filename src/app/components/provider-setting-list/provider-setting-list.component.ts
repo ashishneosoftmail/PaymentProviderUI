@@ -4,7 +4,13 @@ import { ProviderSettingService } from '../../services/provider-setting.service'
 import { CopyProviderSettingService } from '../../services/copy-provider-setting.service';
 
 import { Router } from '@angular/router';
-import { providers } from '../../../constants';
+import {
+  clients,
+  operators,
+  providers,
+  services,
+  status,
+} from '../../../constants';
 
 @Component({
   selector: 'app-provider-setting-list',
@@ -90,5 +96,25 @@ export class ProviderSettingListComponent implements OnInit {
     this.router.navigate([`/provider-settings/update/${encodedSkId}`]);
   }
 
-  // Method to handle copy event
+  // Method to get the service name based on ID
+  getServiceName(serviceID: number): string {
+    const service = services.find((s) => s.key === serviceID);
+    return service ? service.name : 'Unknown Service';
+  }
+  getClienteName(ClientID: number): string {
+    const client = clients.find((s) => s.key === ClientID);
+    return client ? client?.name : 'Unknown Client';
+  }
+  getOperatorName(OperatorID: Number): string {
+    const operator = operators.find((o) => o.key == OperatorID);
+    return operator ? operator?.name : 'Unknown Operator';
+  }
+  // Method to get the service name based on ID
+  getStatusName(statusID: string | number): string {
+    // Convert StatusID to number if it's a string
+    const idAsNumber =
+      typeof statusID === 'string' ? Number(statusID) : statusID;
+    const _status = status.find((s) => s.key === idAsNumber);
+    return _status ? _status.name : 'Unknown Service';
+  }
 }

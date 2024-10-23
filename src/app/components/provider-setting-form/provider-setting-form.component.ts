@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { ProviderSettingService } from '../../services/provider-setting.service';
 import { CopyProviderSettingService } from '../../services/copy-provider-setting.service';
-
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProviderSetting } from '../../models/provider.model';
 import {
@@ -50,13 +49,12 @@ export class ProviderSettingFormComponent {
   ngOnInit(): void {
     this.initForm();
     this.checkIfEditMode();
-    //this.onDataTypeChange(); // Initialize with the default behavior
-    // create one header for Create Provider Setting
+
+    // create one header for Provider Setting
     if (this.isEditMode === false) {
       this.addNewHeader('', 'static', '');
       this.addNewParameter('', '', 'static', '');
     }
-
     // Retrieve data passed via state
     const stateData = history.state.data;
     if (stateData) {
@@ -64,6 +62,7 @@ export class ProviderSettingFormComponent {
     }
   }
 
+  /** Create the provider setting form */
   initForm() {
     //if (!this.providerSetting) return;
 
@@ -149,11 +148,13 @@ export class ProviderSettingFormComponent {
     return responseDataTypes;
   }
 
+  /** Check if a control is valid and touched */
   checkControlValid(controlName: string) {
     const control = this.provSetForm.controls[controlName];
     return (control.invalid || control.value === '') && control.touched;
   }
 
+  /** Add a new header to the headers form array */
   addNewHeader(
     key: string = '',
     valueType: string = 'static',
@@ -176,6 +177,7 @@ export class ProviderSettingFormComponent {
     this.headers.removeAt(index);
   }
 
+  /** Add a new parameter to the parameters form array */
   addNewParameter(
     name: string = '',
     type: string = 'number',
@@ -201,6 +203,7 @@ export class ProviderSettingFormComponent {
     this.parameters.removeAt(index);
   }
 
+  /** Check if the form is in edit mode based on route parameters */
   checkIfEditMode() {
     this.route.paramMap.subscribe((params) => {
       const skIdParam = params.get('skId');
@@ -294,7 +297,7 @@ export class ProviderSettingFormComponent {
     }
   }
 
-  //akash changes
+  /** Copy provider setting data to the create form */
 
   copyToCreateForm(data: any) {
     this.provSetForm.patchValue({
@@ -350,4 +353,40 @@ export class ProviderSettingFormComponent {
       );
     });
   }
+
+  /** Data Type change based on  Parameter Data Type */
+
+  onTypeChange(index: number): void {
+    const param = this.parameters.at(index);
+    if (param.get('Type')?.value === 'bool') {
+      param.get('Value')?.setValue('true'); // Default to 'true' for boolean
+    } else {
+      param.get('Value')?.reset(); // Clear value for other types
+    }
+  }
+
+  allowOnlyNumbers(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode < 48 || charCode > 57) && // Not a digit
+      charCode !== 46 // Not a decimal point
+    ) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  allowOnlyStrings(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode >= 48 && charCode <= 57) || // Prevent digits
+      charCode === 46 // Prevent decimal points
+    ) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+  /** End Data Type change based on  Parameter Data Type */
 }

@@ -28,9 +28,9 @@
     >
       <thead class="table-light">
         <tr>
-          <th>SR NO</th>
-          <th>Service</th>
+          <th>SR.NO</th>
           <th>Client</th>
+          <th>Service</th>
           <th>Operator</th>
           <th>Status</th>
           <th>Actions</th>
@@ -40,15 +40,19 @@
         <tr *ngFor="let data of providerSettings; let i = index">
           <td>{{ i + 1 }}</td>
           <!-- Auto-increment row number -->
-          <td>{{ data.IDService }}</td>
-          <td>{{ data.IDClient }}</td>
-          <td>{{ data.IDProvider }}</td>
-          <td>{{ data.Status }}</td>
+          <td>{{ getClienteName(data.IDClient) }}</td>
+          <td>{{ getServiceName(data.IDService) }}</td>
+          <td>{{ getOperatorName(data.IDOperator) }}</td>
+          <td>{{ getStatusName(data.Status) }}</td>
+
           <!-- <td>{{ data.SK }}</td> -->
           <td>
             <button
               class="btn btn-warning btn-sm me-2"
               (click)="navigateToUpdate(data.SK)"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Edit"
             >
               <i class="fas fa-edit"></i>
             </button>
@@ -56,6 +60,9 @@
             <button
               class="btn btn-primary btn-sm me-2"
               (click)="copyToCreateForm(data)"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Copy"
             >
               <i class="fas fa-copy"></i>
             </button>
@@ -63,6 +70,9 @@
             <button
               class="btn btn-danger btn-sm"
               (click)="deleteProviderSetting(data.SK)"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Delete"
             >
               <i class="fas fa-trash-alt"></i>
             </button>
@@ -80,9 +90,9 @@
       >
         <thead class="table-light">
           <tr>
-            <th>SR NO</th>
-            <th>Service</th>
+            <th>SR.NO</th>
             <th>Client</th>
+            <th>Service</th>
             <th>Operator</th>
             <th>Status</th>
             <th>Actions</th>
@@ -90,6 +100,7 @@
         </thead>
       </table>
       <h5 class="text-center">
+        <br />
         <b> No data available. Please select a provider to load the data.</b>
       </h5>
     </div>
