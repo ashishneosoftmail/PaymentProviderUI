@@ -109,3 +109,6 @@ div[formGroupName='ResponseSettings'] {
   background-color: rgba(0, 123, 255, 0.2); /* Light blue shadow */
   z-index: -1; /* Ensure it’s behind the title */
 }
+.form-check-inline {
+  margin-right: 15px; /* Adjust the value as needed */
+}

@@ -301,7 +301,7 @@
               </div>
 
               <!-- Value Input / Radio Buttons -->
-              <div class="col-md-2">
+              <div class="col-md-2 d-flex">
                 <ng-container
                   *ngIf="
                     parameter.get('ValueType')?.value === 'static';
@@ -311,7 +311,7 @@
                   <ng-container [ngSwitch]="parameter.get('Type')?.value">
                     <!-- Radio Buttons for Boolean Type -->
                     <div *ngSwitchCase="'Bool'">
-                      <div class="form-check">
+                      <div class="form-check form-check-inline">
                         <input
                           type="radio"
                           value="true"
@@ -320,7 +320,7 @@
                         />
                         <label class="form-check-label">True</label>
                       </div>
-                      <div class="form-check">
+                      <div class="form-check form-check-inline">
                         <input
                           type="radio"
                           value="false"
